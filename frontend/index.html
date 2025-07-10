@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .analyze-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result-section {
+            margin-bottom: 25px;
+        }
+
+        .result-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .skill-tag, .role-tag, .course-tag {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .skill-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .role-tag {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+        }
+
+        .course-tag {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #c62828;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Resume Analyzer</h1>
+        
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="resumeFile" class="file-input" accept=".pdf">
+                <label for="resumeFile" class="file-input-label">
+                    📄 Choose Resume (PDF)
+                </label>
+            </div>
+            <div class="file-name" id="fileName"></div>
+            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeResume()" disabled>
+                🔍 Analyze Resume
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your resume with AI...</p>
+        </div>
+
+        <div class="results" id="results">
+            <div class="result-section">
+                <h3>🎯 Top Skills Found</h3>
+                <div id="skillsContainer"></div>
+            </div>
+            
+            <div class="result-section">
+                <h3>💼 Recommended Job Roles</h3>
+                <div id="rolesContainer"></div>
+            </div>
+            
+            <div class="result-section">
+                <h3>📚 Skills to Develop</h3>
+                <div id="missingSkillsContainer"></div>
+            </div>
+            
+            <div class="result-section">
+                <h3>🎓 Recommended Courses</h3>
+                <div id="coursesContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const resumeFile = document.getElementById('resumeFile');
+        const fileName = document.getElementById('fileName');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+
+        // Handle file selection
+        resumeFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileName.textContent = `Selected: ${file.name}`;
+                analyzeBtn.disabled = false;
+            } else {
+                fileName.textContent = '';
+                analyzeBtn.disabled = true;
+            }
+        });
+
+        // Analyze resume function
+        async function analyzeResume() {
+            const file = resumeFile.files[0];
+            if (!file) {
+                alert('Please select a PDF file first');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            analyzeBtn.disabled = true;
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // Make API call
+                const response = await fetch('http://127.0.0.1:5000/upload_resume', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayResults(data);
+                } else {
+                    displayError(data.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                displayError('Failed to connect to server. Make sure the Flask app is running.');
+            } finally {
+                loading.style.display = 'none';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        // Display results
+        function displayResults(data) {
+            // Clear previous results
+            document.getElementById('skillsContainer').innerHTML = '';
+            document.getElementById('rolesContainer').innerHTML = '';
+            document.getElementById('missingSkillsContainer').innerHTML = '';
+            document.getElementById('coursesContainer').innerHTML = '';
+
+            // Display skills
+            if (data.skills) {
+                data.skills.forEach(skill => {
+                    const tag = document.createElement('span');
+                    tag.className = 'skill-tag';
+                    tag.textContent = skill;
+                    document.getElementById('skillsContainer').appendChild(tag);
+                });
+            }
+
+            // Display job roles
+            if (data.job_roles) {
+                data.job_roles.forEach(role => {
+                    const tag = document.createElement('span');
+                    tag.className = 'role-tag';
+                    tag.textContent = role;
+                    document.getElementById('rolesContainer').appendChild(tag);
+                });
+            }
+
+            // Display missing skills
+            if (data.missing_skills) {
+                data.missing_skills.forEach(skill => {
+                    const tag = document.createElement('span');
+                    tag.className = 'skill-tag';
+                    tag.textContent = skill;
+                    document.getElementById('missingSkillsContainer').appendChild(tag);
+                });
+            }
+
+            // Display courses
+            if (data.courses) {
+                data.courses.forEach(course => {
+                    const tag = document.createElement('span');
+                    tag.className = 'course-tag';
+                    tag.textContent = course;
+                    document.getElementById('coursesContainer').appendChild(tag);
+                });
+            }
+
+            results.style.display = 'block';
+        }
+
+        // Display error
+        function displayError(message) {
+            results.innerHTML = `<div class="error">❌ Error: ${message}</div>`;
+            results.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
