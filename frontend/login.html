@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Synkrone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+
+    <style>
+        :root {
+            --primary-color: #1f1f1f;
+            --accent-color: #4e9eff;
+            --bg-color: #121212;
+            --text-color: #fff;
+            --input-bg: #1e1e1e;
+            --border-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: var(--primary-color);
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 15px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: #3a8ce8;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Welcome Back</h2>
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button class="login-btn" type="submit">Login</button>
+
+            <div class="register-link">
+                <p class="register-link">Don't have an account? <a href="register.html">Register</a></p>
+
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
