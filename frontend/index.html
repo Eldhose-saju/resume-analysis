@@ -1,463 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synkrone - AI Resume Intelligence</title>
+  <meta charset="UTF-8">
+  <title>Resume Analyzer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;500;600&display=swap" rel="stylesheet">
+    .container {
+      background: rgb(84, 82, 82);
+      margin-top: 40px;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
 
-    <style>
-        :root {
-            --font-heading: 'Cinzel', serif;
-            --font-body: 'Poppins', sans-serif;
-            --primary-color: #ffffff; /* White */
-            --text-color: #f0f0f0;
-            --text-color-dark: #a0a0a0;
-            --container-bg: rgba(30, 30, 30, 0.7); /* Dark semi-transparent grey */
-            --border-color: rgba(255, 255, 255, 0.1);
-            --accent-color: #cccccc; /* Light grey for subtle highlights */
-        }
+    h1 {
+      text-align: center;
+      color: #e7ebee;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    input[type="file"] {
+      display: block;
+      margin: 20px auto;
+    }
 
-        body {
-            font-family: var(--font-body);
-            background: #121212; /* Dark grey/black background */
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow: hidden;
-        }
+    button {
+      display: block;
+      margin: 0 auto;
+      background-color: #000000;
+      color: rgb(255, 255, 255);
+      border: none;
+      padding: 10px 25px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-        /* Subtle animated gradient background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, #1a1a1a, #2c2c2c, #1a1a1a);
-            background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
-            z-index: -1;
-        }
+    button:hover {
+      background-color: #095121;
+    }
 
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    .results {
+      margin-top: 30px;
+    }
 
-        /* Main Glass Container */
-        .container {
-            background: var(--container-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--border-color);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 800px;
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
+    .result-block {
+      margin-bottom: 20px;
+    }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Typography & NEW Animated Title */
-        h1 {
-            font-family: var(--font-heading);
-            text-align: center;
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            
-            /* New gradient text properties */
-            background: linear-gradient(90deg, #dddddd, #ffffff, #dddddd, #ffffff);
-            background-size: 300% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            color: transparent; /* Fallback */
-
-            /* New animation link */
-            animation: auroraSweep 8s linear infinite;
-        }
-
-        /* New keyframes for the aurora sweep animation */
-        @keyframes auroraSweep {
-            from {
-                background-position: 300% 50%;
-            }
-            to {
-                background-position: 0% 50%;
-            }
-        }
-
-        h3 {
-            font-family: var(--font-heading);
-            color: var(--text-color);
-            font-size: 1.4em;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        /* Upload Section */
-        .upload-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .file-input {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-input-label {
-            display: inline-block;
-            padding: 12px 25px;
-            background: transparent;
-            color: var(--text-color);
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 1px solid var(--accent-color);
-            font-family: 'Merriweather', serif; /* Add this line */
-        }
-
-        .file-input-label:hover {
-            background: var(--border-color);
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .file-name {
-            margin-top: 15px;
-            color: var(--text-color-dark);
-            font-style: italic;
-            font-size: 14px;
-            height: 20px; /* Reserve space to prevent layout shift */
-        }
-
-        /* Analyze Button */
-        .analyze-btn {
-            font-family: var(--font-body);
-            font-weight: 600;
-            background: var(--primary-color);
-            color: #121212;
-            border: 2px solid var(--primary-color);
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .analyze-btn:hover:not(:disabled) {
-            background: transparent;
-            color: var(--primary-color);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
-        }
-
-        .analyze-btn:disabled {
-            background: transparent;
-            border-color: var(--text-color-dark);
-            color: var(--text-color-dark);
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        /* Button Loading Spinner */
-        .btn-spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(0, 0, 0, 0.3);
-            border-top-color: #000;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        .analyze-btn:hover:not(:disabled) .btn-spinner {
-            border-color: rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-        }
-
-        /* Results Section */
-        .results {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            display: none;
-        }
-
-        .result-section {
-            margin-bottom: 30px;
-            opacity: 0;
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .result-section:nth-child(2) { animation-delay: 0.1s; }
-        .result-section:nth-child(3) { animation-delay: 0.2s; }
-        .result-section:nth-child(4) { animation-delay: 0.3s; }
-
-        /* Redesigned Tags */
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--text-color-dark);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-
-        .tag:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            background: var(--accent-color);
-            border-color: var(--accent-color);
-            color: #121212;
-        }
-
-        .error {
-            background: rgba(255, 71, 87, 0.15);
-            color: #ff4757;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #ff4757;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-                align-items: flex-start;
-            }
-            .container {
-                padding: 25px;
-                margin-top: 20px;
-            }
-            h1 {
-                font-size: 2em;
-            }
-            h3 {
-                font-size: 1.2em;
-            }
-        }
-    </style>
+    .loader {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    
-    <div class="container">
-        <h1>Synkrone AI</h1>
-        
-        <div class="upload-section">
-            <div class="file-input-wrapper">
-                <input type="file" id="resumeFile" class="file-input" accept=".pdf,.doc,.docx">
-                <label for="resumeFile" class="file-input-label">
-                    📄 Choose Resume File
-                </label>
-            </div>
-            <div class="file-name" id="fileName">No file selected</div>
-            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeResume()" disabled>
-                Analyze Resume
-            </button>
-        </div>
+  <div class="container">
+    <h1>Resume Analyzer</h1>
+    <input type="file" id="resumeFile">
+    <button onclick="analyzeResume()">Analyze Now</button>
 
-        <div class="results" id="results">
-            </div>
+    <div class="loader" id="loader" style="display: none;">Analyzing...</div>
+
+    <div class="results" id="results" style="display: none;">
+      <div class="result-block">
+        <strong>Skills:</strong>
+        <p id="skills"></p>
+      </div>
+      <div class="result-block">
+        <strong>Job Roles:</strong>
+        <p id="roles"></p>
+      </div>
+      <div class="result-block">
+        <strong>Missing Skills:</strong>
+        <p id="missing"></p>
+      </div>
+      <div class="result-block">
+        <strong>Recommended Courses:</strong>
+        <p id="courses"></p>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const resumeFile = document.getElementById('resumeFile');
-        const fileName = document.getElementById('fileName');
-        const analyzeBtn = document.getElementById('analyzeBtn');
-        const resultsDiv = document.getElementById('results');
+  <script>
+    async function analyzeResume() {
+      const fileInput = document.getElementById("resumeFile");
+      const loader = document.getElementById("loader");
+      const results = document.getElementById("results");
 
-        // Handle file selection
-        resumeFile.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                fileName.textContent = `Selected: ${file.name}`;
-                analyzeBtn.disabled = false;
-                analyzeBtn.innerHTML = 'Analyze Resume';
-            } else {
-                fileName.textContent = 'No file selected';
-                analyzeBtn.disabled = true;
-            }
+      if (!fileInput.files.length) {
+        alert("Please upload a resume.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      loader.style.display = "block";
+      results.style.display = "none";
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/upload_resume", {
+          method: "POST",
+          body: formData
         });
 
-        // Analyze resume function
-        async function analyzeResume() {
-            const file = resumeFile.files[0];
-            if (!file) {
-                alert('Please select a file first');
-                return;
-            }
+        const data = await response.json();
 
-            // UI Update: Show loading state in the button
-            analyzeBtn.disabled = true;
-            analyzeBtn.innerHTML = `<span class="btn-spinner"></span> Analyzing...`;
-            resultsDiv.style.display = 'none';
-            resultsDiv.innerHTML = '';
+        if (response.ok) {
+          document.getElementById("skills").textContent = data.skills?.join(", ") || "N/A";
+          document.getElementById("roles").textContent = data.job_roles?.join(", ") || "N/A";
+          document.getElementById("missing").textContent = data.missing_skills?.join(", ") || "None";
+          document.getElementById("courses").textContent = data.courses?.join(", ") || "No recommendations.";
 
-            // This is a MOCK function for demonstration.
-            // Replace this with your actual fetch call.
-            mockApiCall(file);
+          results.style.display = "block";
+        } else {
+          alert(data.error || "Failed to analyze resume.");
         }
-
-        // MOCK API Call for Demonstration
-        function mockApiCall(file) {
-            console.log(`Simulating analysis for ${file.name}`);
-            
-            // Simulate a network delay
-            setTimeout(() => {
-                // Simulate a successful API response
-                const mockData = {
-                    skills: ["JavaScript", "React", "Node.js", "Python", "SQL", "Project Management", "Agile"],
-                    job_roles: ["Frontend Developer", "Full Stack Developer", "Software Engineer"],
-                    missing_skills: ["TypeScript", "GraphQL", "AWS"],
-                    courses: ["Advanced TypeScript", "AWS Certified Developer", "GraphQL Essentials"]
-                };
-                
-                displayResults(mockData);
-
-                // UI Update: Reset button after completion
-                analyzeBtn.disabled = false;
-                analyzeBtn.innerHTML = 'Analyze Again';
-
-            }, 3000); // 3-second delay
-        }
-
-        // Display results in the UI
-        function displayResults(data) {
-            resultsDiv.innerHTML = `
-                <div class="result-section">
-                    <h3>🎯 Top Skills Found</h3>
-                    <div class="tags-container" id="skillsContainer"></div>
-                </div>
-                <div class="result-section">
-                    <h3>💼 Recommended Job Roles</h3>
-                    <div class="tags-container" id="rolesContainer"></div>
-                </div>
-                <div class="result-section">
-                    <h3>📚 Skills to Develop</h3>
-                    <div class="tags-container" id="missingSkillsContainer"></div>
-                </div>
-                <div class="result-section">
-                    <h3>🎓 Recommended Courses</h3>
-                    <div class="tags-container" id="coursesContainer"></div>
-                </div>
-            `;
-
-            const createTag = (text) => `<span class="tag">${text}</span>`;
-            
-            if (data.skills) {
-                document.getElementById('skillsContainer').innerHTML = data.skills.map(s => createTag(s)).join('');
-            }
-            if (data.job_roles) {
-                document.getElementById('rolesContainer').innerHTML = data.job_roles.map(r => createTag(r)).join('');
-            }
-            if (data.missing_skills) {
-                document.getElementById('missingSkillsContainer').innerHTML = data.missing_skills.map(s => createTag(s)).join('');
-            }
-            if (data.courses) {
-                document.getElementById('coursesContainer').innerHTML = data.courses.map(c => createTag(c)).join('');
-            }
-            
-            resultsDiv.style.display = 'block';
-        }
-
-        // Display an error message
-        function displayError(message) {
-            resultsDiv.innerHTML = `<div class="error">❌ Error: ${message}</div>`;
-            resultsDiv.style.display = 'block';
-
-            // Reset button
-            analyzeBtn.disabled = false;
-            analyzeBtn.innerHTML = 'Try Again';
-        }
-        
-        /* // --- YOUR ORIGINAL FETCH CALL ---
-        // You can uncomment this and replace the mockApiCall function
-        // in the analyzeResume function to connect to your backend.
-
-        async function analyzeResumeWithFetch() {
-            const file = resumeFile.files[0];
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await fetch('http://127.0.0.1:5000/upload_resume', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    displayResults(data);
-                } else {
-                    displayError(data.error || 'Unknown error occurred');
-                }
-            } catch (error) {
-                displayError('Failed to connect to the server. Please ensure the backend is running.');
-            } finally {
-                analyzeBtn.disabled = false;
-                analyzeBtn.innerHTML = 'Analyze Again';
-            }
-        }
-        */
-    </script>
-
+      } catch (error) {
+        alert("Error connecting to backend.");
+        console.error(error);
+      } finally {
+        loader.style.display = "none";
+      }
+    }
+  </script>
 </body>
 </html>
