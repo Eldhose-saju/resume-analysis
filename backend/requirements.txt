@@ -4,3 +4,9 @@ PyPDF2
 pdfplumber
 google-generativeai
 python-dotenv
+flask
+flask-cors
+PyPDF2
+pdfplumber
+google-generativeai
+python-dotenv
